@@ -1,13 +1,20 @@
-apply plugin: 'android-library'
+apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-sonatypeUsername = project.hasProperty('sonatypeUsername') ? sonatypeUsername : ""
-sonatypePassword = project.hasProperty('sonatypePassword') ? sonatypePassword : ""
+def sonatypeUsername = project.hasProperty('sonatypeUsername') ? sonatypeUsername : ""
+def sonatypePassword = project.hasProperty('sonatypePassword') ? sonatypePassword : ""
 
 android {
-  compileSdkVersion 19
-  buildToolsVersion '19.0.3'
+  compileSdkVersion rootProject.ext.compileSdkVersion
+  buildToolsVersion rootProject.ext.buildToolsVersion
+
+  defaultConfig {
+    minSdkVersion 8
+    targetSdkVersion 22
+    versionCode 1
+    versionName version
+  }
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_7
@@ -16,11 +23,12 @@ android {
 }
 
 dependencies {
-  provided 'com.squareup.picasso:picasso:2.2.0'
+  provided 'com.squareup.picasso:picasso:2.5.0'
+  provided 'com.android.support:support-annotations:22.1.0'
 }
 
 task androidJavadocs(type: Javadoc) {
-  source = android.sourceSets.main.allJava
+  source = android.sourceSets.main.java.source
 }
 
 task androidJavadocsJar(type: Jar) {
@@ -32,7 +40,7 @@ task androidJavadocsJar(type: Jar) {
 task androidSourcesJar(type: Jar) {
   classifier = 'sources'
   //basename = artifact_id
-  from android.sourceSets.main.allSource
+  from android.sourceSets.main.java.source
 }
 
 artifacts {

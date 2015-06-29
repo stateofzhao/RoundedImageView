@@ -1,7 +1,10 @@
 RoundedImageView
 ================
 
-A fast ImageView (and Drawable) that supports rounded corners (and ovals or circles) based on the original [example from Romain Guy](http://www.curious-creature.org/2012/12/11/android-recipe-1-image-with-rounded-corners/)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.makeramen/roundedimageview/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.makeramen/roundedimageview)
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-RoundedImageView-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/680)
+
+A fast ImageView (and Drawable) that supports rounded corners (and ovals or circles) based on the original [example from Romain Guy](http://www.curious-creature.org/2012/12/11/android-recipe-1-image-with-rounded-corners/). RoundedImageView is a full superset of [CircleImageView](https://github.com/hdodenhof/CircleImageView) (which is actually just a subset based on this lib) with many more advanced features like support for ovals, rounded rectangles, ScaleTypes and TileModes.
 
 ![RoundedImageView screenshot](https://raw.github.com/makeramen/RoundedImageView/master/screenshot.png)
 ![RoundedImageView screenshot with ovals](https://raw.github.com/makeramen/RoundedImageView/master/screenshot-oval.png)
@@ -11,19 +14,20 @@ There are many ways to create rounded corners in android, but this is the fastes
 * does **not** use a clipPath which is not hardware accelerated and not anti-aliased.
 * does **not** use setXfermode to clip the bitmap and draw twice to the canvas.
 
-If you know of a better method, let me know and I'll implement it!
+If you know of a better method, let me know (or even better open a pull request)!
 
 Also has proper support for:
 * Borders (with Colors and ColorStateLists)
 * Ovals and Circles
 * All `ScaleType`s
-  * Borders are drawn at view edge, not bitmap edge.
+  * Borders are drawn at view edge, not bitmap edge
   * Except on edges where the bitmap is smaller than the view
   * Borders are **not** scaled up/down with the image (correct width and radius are maintained)
 * Anti-aliasing
 * Transparent backgrounds
 * Hardware acceleration
 * Support for LayerDrawables (including TransitionDrawables)
+* TileModes for repeating drawables
 
 
 Gradle
@@ -37,7 +41,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.makeramen:roundedimageview:1.3.0'
+    compile 'com.makeramen:roundedimageview:2.1.0'
 }
 ```
 
@@ -46,30 +50,33 @@ Usage
 Define in xml:
 
 ```xml
-<com.makeramen.RoundedImageView
+<com.makeramen.roundedimageview.RoundedImageView
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/imageView1"
         android:src="@drawable/photo1"
-        android:scaleType="centerCrop"
-        app:corner_radius="30dip"
-        app:border_width="2dip"
-        app:border_color="#333333"
-        app:mutate_background="true"
-        app:oval="true" />
+        android:scaleType="fitCenter"
+        app:riv_corner_radius="30dip"
+        app:riv_border_width="2dip"
+        app:riv_border_color="#333333"
+        app:riv_mutate_background="true"
+        app:riv_tile_mode="repeat"
+        app:riv_oval="true" />
 ```
 
 Or in code:
 
 ```java
-RoundedImageView iv = new RoundedImageView(context);
-iv.setScaleType(ScaleType.CENTER_CROP);
-iv.setCornerRadius(10);
-iv.setBorderWidth(2);
-iv.setBorderColor(Color.DKGRAY);
-iv.setRoundedBackground(true);
-iv.setImageDrawable(drawable);
-iv.setBackground(backgroundDrawable);
-iv.setOval(true);
+RoundedImageView riv = new RoundedImageView(context);
+riv.setScaleType(ScaleType.CENTER_CROP);
+riv.setCornerRadius((float) 10);
+riv.setBorderWidth((float) 2);
+riv.setBorderColor(Color.DKGRAY);
+riv.mutateBackground(true);
+riv.setImageDrawable(drawable);
+riv.setBackground(backgroundDrawable);
+riv.setOval(true);
+riv.setTileModeX(Shader.TileMode.REPEAT);
+riv.setTileModeY(Shader.TileMode.REPEAT);
 ```
 
 Or make a Transformation for Picasso:
@@ -91,6 +98,32 @@ Picasso.with(context)
 
 ChangeLog
 ----------
+* **2.1.1**
+    * Fix for CENTER_CROP bug ([#8](https://github.com/vinc3m1/RoundedImageView/issues/8)) 
+
+* **2.1.0**
+    * Add APIs for setting different corner radii. Currently only supports a single radius or 0 (allows you to choose which corners to be rounded by setting otheres to 0).
+
+* **2.0.1**
+    * Invalidate after `setCornerRadius()`
+
+* **2.0.0**
+    * Package changed from `com.makeramen.*` to `com.makeramen.roundedimageview.*`
+    * `setCornerRadius(int resId)` is now `setCornerRadiusDimen(int resId)` for clarity.
+    * Logging fix (#81)
+    * ColorFilter support (#73)
+
+* **1.5.0**
+    * [`Shader.TileMode`](http://developer.android.com/reference/android/graphics/Shader.TileMode.html) support
+
+* **1.4.0**
+    * initial ColorDrawable fix for Lollipop(5.0)
+    * xml attributes are now namespaced and start with `riv_`
+    * renamed methods `mutatesBackground()` and `mutateBackground(bool)`
+
+* **1.3.1**
+    * add support for About Libraries ([#57](https://github.com/vinc3m1/RoundedImageView/issues/57))
+    * reset matrix for Robolectric support  ([#56](https://github.com/vinc3m1/RoundedImageView/issues/56))
 
 * **1.3.0**
     * A new `RoundedTransformationBuilder` to help build Picasso `Transformation`s
@@ -125,8 +158,4 @@ ChangeLog
 * **1.0.0**
     * Initial release to maven central
     * Programmatically setting attributes with TransitionDrawables not supported.
-
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/vinc3m1/roundedimageview/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
